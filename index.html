@@ -164,7 +164,6 @@
         <div class="absolute -bottom-6 right-1/4 text-6xl float-anim opacity-20 transform rotate-12">☁️</div>
 
         <div class="max-w-5xl mx-auto px-6 py-4 w-full flex flex-row justify-between items-center relative z-10 gap-4">
-            
             <!-- LOGO SECTION (Cloudinary) -->
             <div class="flex-shrink-0 transform hover:scale-105 transition duration-300">
                 <img src="https://res.cloudinary.com/dbeuu3lmv/image/upload/v1768744718/LOGO1_u8zacw.png" 
@@ -189,61 +188,53 @@
             <p class="text-gray-600 font-medium text-lg md:text-2xl">ยินดีต้อนรับสู่ภารกิจพิชิตไต้หวัน 5 วัน<br>เตรียมตัวให้พร้อม แล้วไปลุยกันเลย!</p>
         </section>
 
-        <!-- COUNTDOWN & UTILITY CONTAINER -->
-        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
-            
-            <!-- COUNTDOWN SECTION -->
-            <section id="countdown-section" class="bg-white/95 backdrop-blur rounded-[2rem] p-6 shadow-xl border-4 border-dashed border-toy-yellow relative text-center">
-                <div class="absolute -top-4 left-1/2 -translate-x-1/2 bg-toy-red text-white px-6 py-1 rounded-full font-bold shadow-md border-2 border-white text-sm tracking-wider uppercase whitespace-nowrap font-sans transform rotate-1">
-                    🚀 Mission Countdown
-                </div>
-                
-                <h3 class="mt-4 text-lg font-bold text-toy-blue mb-4">นับถอยหลังสู่วันเดินทาง</h3>
+        <!-- COUNTDOWN SECTION -->
+        <section id="countdown-section" class="bg-white/95 backdrop-blur rounded-[2rem] p-6 shadow-xl border-4 border-dashed border-toy-yellow relative text-center">
+            <div class="absolute -top-4 left-1/2 -translate-x-1/2 bg-toy-red text-white px-6 py-1 rounded-full font-bold shadow-md border-2 border-white text-sm tracking-wider uppercase whitespace-nowrap font-sans transform rotate-1">
+                🚀 Mission Countdown
+            </div>
+            <h3 class="mt-4 text-lg font-bold text-toy-blue mb-4">นับถอยหลังสู่วันเดินทาง</h3>
+            <div class="flex flex-wrap justify-center gap-3" id="countdown-timer">
+                <div class="flex flex-col items-center p-2 bg-sky-50 rounded-xl border-2 border-sky-100 min-w-[60px]"><span class="text-2xl font-bold text-toy-blue" id="cd-days">00</span><span class="text-[10px] font-bold text-gray-400 uppercase">Days</span></div>
+                <div class="flex flex-col items-center p-2 bg-yellow-50 rounded-xl border-2 border-yellow-100 min-w-[60px]"><span class="text-2xl font-bold text-yellow-600" id="cd-hours">00</span><span class="text-[10px] font-bold text-gray-400 uppercase">Hrs</span></div>
+                <div class="flex flex-col items-center p-2 bg-green-50 rounded-xl border-2 border-green-100 min-w-[60px]"><span class="text-2xl font-bold text-green-600" id="cd-minutes">00</span><span class="text-[10px] font-bold text-gray-400 uppercase">Mins</span></div>
+                <div class="flex flex-col items-center p-2 bg-purple-50 rounded-xl border-2 border-purple-100 min-w-[60px]"><span class="text-2xl font-bold text-purple-600" id="cd-seconds">00</span><span class="text-[10px] font-bold text-gray-400 uppercase">Secs</span></div>
+            </div>
+            <p class="mt-4 text-xs font-bold text-gray-500 bg-gray-100 inline-block px-3 py-1 rounded-full">
+                📍 เจอกันตี 5 ที่สนามบินสุวรรณภูมิ
+            </p>
+        </section>
 
-                <div class="flex flex-wrap justify-center gap-3" id="countdown-timer">
-                    <div class="flex flex-col items-center p-2 bg-sky-50 rounded-xl border-2 border-sky-100 min-w-[60px]"><span class="text-2xl font-bold text-toy-blue" id="cd-days">00</span><span class="text-[10px] font-bold text-gray-400 uppercase">Days</span></div>
-                    <div class="flex flex-col items-center p-2 bg-yellow-50 rounded-xl border-2 border-yellow-100 min-w-[60px]"><span class="text-2xl font-bold text-yellow-600" id="cd-hours">00</span><span class="text-[10px] font-bold text-gray-400 uppercase">Hrs</span></div>
-                    <div class="flex flex-col items-center p-2 bg-green-50 rounded-xl border-2 border-green-100 min-w-[60px]"><span class="text-2xl font-bold text-green-600" id="cd-minutes">00</span><span class="text-[10px] font-bold text-gray-400 uppercase">Mins</span></div>
-                    <div class="flex flex-col items-center p-2 bg-purple-50 rounded-xl border-2 border-purple-100 min-w-[60px]"><span class="text-2xl font-bold text-purple-600" id="cd-seconds">00</span><span class="text-[10px] font-bold text-gray-400 uppercase">Secs</span></div>
+        <!-- UTILITY SECTION -->
+        <section class="grid grid-cols-2 gap-3 md:gap-6">
+            <!-- Weather -->
+            <div class="toy-card bg-sky-100 border-l-[6px] border-toy-blue p-4 rounded-2xl flex items-center justify-between shadow-md relative overflow-hidden group">
+                <div class="relative z-10">
+                    <div class="flex items-center gap-2 mb-1">
+                        <span class="text-xl">🌤️</span>
+                        <span class="font-bold text-toy-blue text-sm">Andy's Weather</span>
+                    </div>
+                    <span id="weather-temp" class="text-3xl font-bold text-toy-blue">--°C</span>
                 </div>
-                
-                <p class="mt-4 text-xs font-bold text-gray-500 bg-gray-100 inline-block px-3 py-1 rounded-full">
-                    📍 เจอกันตี 5 ที่สนามบินสุวรรณภูมิ
-                </p>
-            </section>
-
-            <!-- UTILITY SECTION -->
-            <div class="space-y-4">
-                <!-- Weather -->
-                <div class="bg-sky-100 border-l-[6px] border-toy-blue p-4 rounded-2xl flex items-center justify-between shadow-md relative overflow-hidden group">
-                    <div class="relative z-10">
-                        <div class="flex items-center gap-2 mb-1">
-                            <span class="text-xl">🌤️</span>
-                            <span class="font-bold text-toy-blue text-sm">Andy's Weather</span>
-                        </div>
-                        <span id="weather-temp" class="text-3xl font-bold text-toy-blue">--°C</span>
-                    </div>
-                    <div class="text-5xl transform group-hover:scale-110 transition duration-300" id="weather-icon">☁️</div>
+                <div class="text-5xl transform group-hover:scale-110 transition duration-300" id="weather-icon">☁️</div>
+            </div>
+            <!-- Rate -->
+            <div class="bg-pink-100 border-l-[6px] border-pink-400 p-4 rounded-2xl shadow-md relative overflow-hidden">
+                <div class="flex items-center gap-2 mb-2">
+                    <span class="text-xl">🐷</span>
+                    <span class="font-bold text-pink-700 text-sm">Hamm's Rate</span>
                 </div>
-
-                <!-- Rate -->
-                <div class="bg-pink-100 border-l-[6px] border-pink-400 p-4 rounded-2xl shadow-md relative overflow-hidden">
-                    <div class="flex items-center gap-2 mb-2">
-                        <span class="text-xl">🐷</span>
-                        <span class="font-bold text-pink-700 text-sm">Hamm's Rate</span>
-                    </div>
-                    <div class="flex items-center gap-2">
-                        <input type="number" id="amount-one" class="w-full rounded-lg border-2 border-pink-300 p-2 text-sm font-bold text-center text-gray-700 focus:outline-none" value="1" oninput="calculate()">
-                        <span class="text-pink-400 font-bold">=</span>
-                        <input type="number" id="amount-two" class="w-full rounded-lg border-2 border-pink-300 p-2 text-sm font-bold text-center text-gray-700 bg-white" value="1" readonly>
-                        <select id="currency-two" class="rounded-lg border-2 border-pink-300 bg-white p-2 text-sm font-bold text-pink-700 focus:outline-none hidden" onchange="calculate()">
-                            <option value="THB" selected>THB</option>
-                        </select>
-                        <span class="text-xs font-bold text-pink-500">THB</span>
-                    </div>
+                <div class="flex items-center gap-2">
+                    <input type="number" id="amount-one" class="w-full rounded-lg border-2 border-pink-300 p-2 text-sm font-bold text-center text-gray-700 focus:outline-none" value="1" oninput="calculate()">
+                    <span class="text-pink-400 font-bold">=</span>
+                    <input type="number" id="amount-two" class="w-full rounded-lg border-2 border-pink-300 p-2 text-sm font-bold text-center text-gray-700 bg-white" value="1" readonly>
+                    <select id="currency-two" class="rounded-lg border-2 border-pink-300 bg-white p-2 text-sm font-bold text-pink-700 focus:outline-none hidden" onchange="calculate()">
+                        <option value="THB" selected>THB</option>
+                    </select>
+                    <span class="text-xs font-bold text-pink-500">THB</span>
                 </div>
             </div>
-        </div>
+        </section>
 
         <!-- ITINERARY SECTION -->
         <section id="itinerary" class="space-y-6">
@@ -272,16 +263,16 @@
 
     </main>
 
-    <!-- FOOTER (NEW) -->
+    <!-- FOOTER -->
     <footer class="bg-gradient-to-t from-sky-400 to-sky-300 border-t-[8px] border-toy-yellow rounded-t-[3rem] mt-12 relative overflow-hidden">
         <div class="absolute inset-0 header-bg-animate opacity-30 pointer-events-none"></div>
         <div class="max-w-5xl mx-auto px-6 py-8 flex flex-col md:flex-row justify-between items-center gap-4 relative z-10">
             <div class="text-white font-cartoon text-center md:text-left">
                 <p class="text-lg">TAIWAN TOUR 2026</p>
-                <p class="text-sm opacity-80">Made with 💖 by CareKare</p>
+                <p class="text-sm opacity-80">Made with by CareKare 💖</p>
             </div>
             <!-- MRT MAP BUTTON -->
-             <a href="https://surakit2538.github.io/taiwan2026/map.html" target="_blank" class="bg-toy-blue text-white border-4 border-blue-800 px-6 py-3 rounded-full text-lg font-bold shadow-xl active:scale-95 transition-all flex items-center gap-2 hover:bg-blue-700 hover:-rotate-1 transform">
+             <a href="https://surakit2538.github.io/taiwan2026/map.html" class="bg-toy-blue text-white border-4 border-blue-800 px-6 py-3 rounded-full text-lg font-bold shadow-xl active:scale-95 transition-all flex items-center gap-2 hover:bg-blue-700 hover:-rotate-1 transform">
                 <span>🗺️</span> <span>MRT MAP</span>
             </a>
         </div>
