@@ -476,7 +476,9 @@
                 },
                 { time: "11.00 A.M.", icon: "🏙️", transport: "MRT", title: "Zhongshan District", desc: "MRT Zhongshan (G14) Exit 4 or R7", map: "https://maps.app.goo.gl/cKUinf7u2R8QRL8c6" },
                 { time: "11.30 A.M.", icon: "👕", transport: "Walk", title: "Mardi Mercredi", desc: "Shin Kong Mitsukoshi Nanxi Store 3", map: "https://maps.app.goo.gl/oSkpJ2ExqFuuXF9u8" },
-                { time: "13.00 P.M.", icon: "🍜", transport: "Walk", title: "Master Spicy Noodle", desc: "ร้านราเมงเจ้าดัง", map: "https://maps.app.goo.gl/FQoHP4fBdasqhYzs7" },
+                { 
+                    time: "13.00 P.M.", icon: "🍜", transport: "Walk", title: "Master Spicy Noodle", desc: "ร้านราเมงเจ้าดัง", map: "https://maps.app.goo.gl/FQoHP4fBdasqhYzs7" 
+                },
                 { 
                     time: "15.00 P.M.", icon: "🎁", transport: "MRT", title: "Souvenirs @ Dongmen", desc: "L'Atelier Lotus (Nougat) | Dongmen Exit 5", 
                     map: "https://maps.app.goo.gl/XeYVm3vgcc9jrzhU6" 
@@ -528,33 +530,36 @@
             } catch (err) { }
         }
 
-        fetchWeather();
-        calculate();
-
         // --- COUNTDOWN & ITINERARY LOGIC ---
         function updateCountdown() {
             const targetDate = new Date("2026-02-27T05:00:00").getTime();
             const now = new Date().getTime();
             const timeLeft = targetDate - now;
+            
+            // Check if element exists before updating
+            const container = document.getElementById("countdown-timer");
+            if (!container) return;
+
             if (timeLeft < 0) {
-                document.getElementById("countdown-timer").innerHTML = "<div class='text-2xl font-bold text-toy-red'>🎉 MISSION STARTED! 🎉</div>";
+                container.innerHTML = "<div class='text-2xl font-bold text-toy-red'>🎉 MISSION STARTED! 🎉</div>";
                 return;
             }
             const days = Math.floor(timeLeft / (1000 * 60 * 60 * 24));
             const hours = Math.floor((timeLeft % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
             const minutes = Math.floor((timeLeft % (1000 * 60 * 60)) / (1000 * 60));
             const seconds = Math.floor((timeLeft % (1000 * 60)) / 1000);
+            
             document.getElementById("cd-days").innerText = days.toString().padStart(2, '0');
             document.getElementById("cd-hours").innerText = hours.toString().padStart(2, '0');
             document.getElementById("cd-minutes").innerText = minutes.toString().padStart(2, '0');
             document.getElementById("cd-seconds").innerText = seconds.toString().padStart(2, '0');
         }
-        setInterval(updateCountdown, 1000);
-        updateCountdown();
 
         function switchDay(day) {
             [1, 2, 3, 4, 5].forEach(d => {
                 const btn = document.getElementById(`btn-day${d}`);
+                if (!btn) return;
+                
                 if (d === day) {
                     btn.className = "tab-btn tab-active px-2 py-3 md:px-6 md:py-4 rounded-xl text-base md:text-xl font-bold shadow-lg transform scale-105";
                 } else {
@@ -568,6 +573,9 @@
             const container = document.getElementById('timeline-container');
             const key = `day${day}`;
             const data = tripData[key];
+            
+            if (!container) return;
+            
             container.innerHTML = '';
             if (!data || data.length === 0) {
                 container.innerHTML = `<div class="text-center text-gray-500 py-10 font-cartoon text-xl">ไม่มีข้อมูลในกล่องของเล่นนี้ 📦</div>`;
@@ -642,8 +650,17 @@
         function scrollToSection(id) { document.getElementById(id).scrollIntoView({ behavior: 'smooth' }); }
         function scrollToTop() { window.scrollTo({ top: 0, behavior: 'smooth' }); }
         
+        // --- INITIALIZATION ---
         document.addEventListener('DOMContentLoaded', () => { 
-            // ระบบตรวจสอบวันที่อัตโนมัติ
+            // 1. Start Utils
+            fetchWeather();
+            calculate();
+
+            // 2. Start Countdown
+            updateCountdown();
+            setInterval(updateCountdown, 1000);
+
+            // 3. Auto Date Selection
             const now = new Date();
             const date = now.getDate();
             const month = now.getMonth() + 1; // JavaScript นับเดือนเริ่มที่ 0 (ม.ค. = 0)
