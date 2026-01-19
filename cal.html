@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>โปรแกรมหารค่าใช้จ่ายออนไลน์</title>
+    <title>โปรแกรมหารค่าใช้จ่ายออนไลน์ (Taiwan 2026)</title>
     
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
@@ -32,8 +32,8 @@
                 <div>
                     <h1 class="font-bold text-gray-900 leading-tight">หารค่าใช้จ่าย (<span id="group-name-display">...</span>)</h1>
                     <div class="flex items-center gap-1 text-xs text-green-600">
-                        <div class="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
-                        <span id="status-text" class="flex items-center gap-1">กำลังเชื่อมต่อ...</span>
+                        <div id="status-dot" class="w-2 h-2 bg-gray-300 rounded-full"></div>
+                        <span id="status-text" class="flex items-center gap-1 font-medium text-gray-400">กำลังรอ...</span>
                     </div>
                 </div>
             </div>
@@ -42,6 +42,22 @@
                 <span>Auto-Sync</span>
             </div>
         </header>
+
+        <!-- Permission Error Alert -->
+        <div id="error-alert" class="hidden bg-red-50 border border-red-200 rounded-xl p-4 animate-bounce-in">
+            <div class="flex items-start gap-3">
+                <div class="bg-red-100 p-2 rounded-full text-red-600">
+                    <i data-lucide="alert-triangle" width="24"></i>
+                </div>
+                <div>
+                    <h3 class="font-bold text-red-800">เข้าถึงฐานข้อมูลไม่ได้ (Permission Denied)</h3>
+                    <p class="text-sm text-red-700 mt-1">
+                        กรุณาตรวจสอบ <strong>Firebase Console > Firestore Database > Rules</strong><br>
+                        ต้องตั้งค่าเป็น <code>allow read, write: if true;</code> ถึงจะใช้งานได้
+                    </p>
+                </div>
+            </div>
+        </div>
 
         <!-- Main Content Grid -->
         <div class="grid md:grid-cols-2 gap-6">
@@ -197,7 +213,7 @@
 
         // Global State
         const FIXED_USERS = ['Game', 'Care', 'MAM', 'POP', 'BRIGHT', 'NATTY'];
-        const DEFAULT_GROUP_NAME = 'MyTrip';
+        const DEFAULT_GROUP_NAME = 'Taiwan2026';
         
         let currentState = {
             user: null,
@@ -208,16 +224,17 @@
             isSyncing: false
         };
 
-        // Initialize Firebase
-        const firebaseConfig = JSON.parse(typeof __firebase_config !== 'undefined' ? __firebase_config : '{}');
-        const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id';
-        
-        // Safety check for config
-        if (!firebaseConfig.apiKey) {
-            console.error("Firebase config missing. This app requires the environment to provide __firebase_config.");
-            document.body.innerHTML = '<div class="p-10 text-center text-red-500">System Error: Missing Firebase Configuration</div>';
-            throw new Error("Missing config");
-        }
+        // --- Firebase Configuration ---
+        const firebaseConfig = {
+            apiKey: "AIzaSyAf9VO2hEl0R9re562KfZjcbjTrhNXyofw",
+            authDomain: "taiwan2026-663d5.firebaseapp.com",
+            projectId: "taiwan2026-663d5",
+            storageBucket: "taiwan2026-663d5.firebasestorage.app",
+            messagingSenderId: "118390726924",
+            appId: "1:118390726924:web:129121eb030c333636a929",
+            measurementId: "G-M8F00PP277"
+        };
+        const appId = "taiwan-trip-data";
 
         const app = initializeApp(firebaseConfig);
         const auth = getAuth(app);
@@ -227,6 +244,8 @@
         const ui = {
             groupName: document.getElementById('group-name-display'),
             statusText: document.getElementById('status-text'),
+            statusDot: document.getElementById('status-dot'),
+            errorAlert: document.getElementById('error-alert'),
             payerButtons: document.getElementById('payer-buttons'),
             involvedButtons: document.getElementById('involved-buttons'),
             inputPayer: document.getElementById('input-payer'),
@@ -255,10 +274,12 @@
 
         // --- Auth & Init ---
         async function initAuth() {
-            if (typeof __initial_auth_token !== 'undefined' && __initial_auth_token) {
-                await signInWithCustomToken(auth, __initial_auth_token);
-            } else {
+            try {
                 await signInAnonymously(auth);
+            } catch (error) {
+                console.error("Auth Error:", error);
+                ui.statusText.textContent = 'Auth Failed';
+                ui.statusText.classList.add('text-red-500');
             }
         }
 
@@ -266,6 +287,8 @@
             currentState.user = user;
             if (user) {
                 startSync();
+            } else {
+                ui.statusText.textContent = 'กำลังยืนยันตัวตน...';
             }
         });
 
@@ -278,30 +301,51 @@
 
         // --- Sync Data ---
         function startSync() {
-            ui.statusText.innerHTML = 'ออนไลน์';
+            ui.statusText.textContent = 'กำลังเชื่อมต่อ...';
+            ui.statusText.classList.remove('text-red-500', 'text-gray-400');
+            ui.statusText.classList.add('text-green-600');
+            ui.statusDot.classList.remove('bg-gray-300', 'bg-red-500');
+            ui.statusDot.classList.add('bg-green-500', 'animate-pulse');
+            
             ui.loadingIndicator.classList.remove('hidden');
             ui.emptyState.classList.add('hidden');
+            ui.errorAlert.classList.add('hidden'); // Hide error initially
 
             const docRef = doc(db, 'artifacts', appId, 'public', 'data', 'bill_groups', DEFAULT_GROUP_NAME);
 
             onSnapshot(docRef, (docSnap) => {
                 ui.loadingIndicator.classList.add('hidden');
+                ui.statusText.textContent = 'ออนไลน์';
                 
                 if (docSnap.exists()) {
                     const data = docSnap.data();
                     currentState.expenses = data.expenses || [];
                 } else {
-                    setDoc(docRef, { expenses: [], createdAt: new Date().toISOString() }, { merge: true });
+                    // Try to create the document
+                    setDoc(docRef, { expenses: [], createdAt: new Date().toISOString() }, { merge: true })
+                        .catch(err => {
+                             // This specific error catch is for setDoc failure (write permission)
+                             console.error("Init Doc Error:", err);
+                        });
                     currentState.expenses = [];
                 }
                 renderExpenses();
-                
-                // Hide summary on data change to force re-calculation
                 ui.summaryCard.classList.add('hidden');
             }, (error) => {
                 console.error("Sync Error:", error);
-                ui.statusText.textContent = 'เกิดข้อผิดพลาด';
+                
+                ui.loadingIndicator.classList.add('hidden');
+                ui.statusDot.classList.remove('bg-green-500', 'animate-pulse');
+                ui.statusDot.classList.add('bg-red-500');
+                ui.statusText.classList.remove('text-green-600');
                 ui.statusText.classList.add('text-red-500');
+                
+                if (error.code === 'permission-denied') {
+                    ui.statusText.textContent = 'ถูกปฏิเสธสิทธิ์';
+                    ui.errorAlert.classList.remove('hidden'); // Show big alert
+                } else {
+                    ui.statusText.textContent = 'เกิดข้อผิดพลาด';
+                }
             });
         }
 
@@ -313,10 +357,13 @@
             try {
                 const docRef = doc(db, 'artifacts', appId, 'public', 'data', 'bill_groups', DEFAULT_GROUP_NAME);
                 await updateDoc(docRef, { expenses: newExpenses });
-                ui.statusText.innerHTML = 'ออนไลน์';
+                ui.statusText.textContent = 'ออนไลน์';
             } catch (e) {
                 console.error("Save Error:", e);
-                ui.statusText.innerHTML = 'บันทึกไม่สำเร็จ';
+                ui.statusText.textContent = 'บันทึกไม่สำเร็จ';
+                if (e.code === 'permission-denied') {
+                     ui.errorAlert.classList.remove('hidden');
+                }
             }
         }
 
@@ -332,7 +379,6 @@
                 </button>
             `).join('');
             
-            // Re-attach listeners
             document.querySelectorAll('.payer-btn').forEach(btn => {
                 btn.addEventListener('click', () => {
                     currentState.payer = btn.dataset.user;
@@ -375,7 +421,6 @@
             const expenses = currentState.expenses;
             ui.countDisplay.textContent = expenses.length;
             
-            // Total badge
             if (expenses.length > 0) {
                 const total = expenses.reduce((sum, ex) => sum + ex.amount, 0);
                 ui.totalBadge.textContent = `รวม ${total.toLocaleString()} ฿`;
@@ -388,7 +433,6 @@
                 ui.emptyState.classList.remove('hidden');
             }
 
-            // List
             ui.expensesContainer.innerHTML = expenses.slice().reverse().map(ex => `
                 <div class="p-3 bg-white rounded-xl border border-gray-100 shadow-sm hover:shadow-md transition-shadow">
                     <div class="flex justify-between items-start mb-1">
@@ -406,7 +450,7 @@
                         </div>
                     </div>
                     <div class="mt-2 pt-2 border-t border-gray-50 flex flex-wrap gap-1">
-                        <span class="text-[10px] uppercase font-bold text-gray-400 mr-1 self-center">คนหาร:</span>
+                        <span className="text-[10px] uppercase font-bold text-gray-400 mr-1 self-center">คนหาร:</span>
                         ${ex.splitType === 'all' 
                             ? '<span class="text-xs bg-gray-100 text-gray-600 px-2 py-0.5 rounded-full">ทุกคน (6)</span>' 
                             : ex.involved.map(u => `<span class="text-[10px] bg-green-50 text-green-700 px-1.5 py-0.5 rounded border border-green-100">${u}</span>`).join('')
@@ -415,7 +459,6 @@
                 </div>
             `).join('');
 
-            // Attach Delete Listeners
             document.querySelectorAll('.delete-btn').forEach(btn => {
                 btn.addEventListener('click', (e) => {
                     const id = Number(e.currentTarget.dataset.id);
@@ -428,7 +471,6 @@
 
         // --- Logic Operations ---
 
-        // Add Expense
         ui.form.addEventListener('submit', async (e) => {
             e.preventDefault();
             const desc = ui.inputDesc.value.trim();
@@ -450,27 +492,22 @@
 
                 const newExpenses = [...currentState.expenses, newExpense];
                 
-                // Reset UI
                 ui.inputDesc.value = '';
                 ui.inputAmount.value = '';
-                // Reset split type to all
                 currentState.splitType = 'all';
                 updateSplitTypeUI();
                 currentState.involvedUsers = [...FIXED_USERS];
                 renderInvolvedButtons();
                 
-                // Save
                 saveData(newExpenses);
             }
         });
 
-        // Remove Expense
         function removeExpense(id) {
             const newExpenses = currentState.expenses.filter(ex => ex.id !== id);
             saveData(newExpenses);
         }
 
-        // Clear All
         ui.btnAskClear.addEventListener('click', () => {
             ui.btnAskClear.parentElement.classList.add('hidden');
             ui.confirmClear.classList.remove('hidden');
@@ -487,10 +524,9 @@
             ui.confirmClear.classList.add('hidden');
             ui.confirmClear.classList.remove('flex');
             ui.btnAskClear.parentElement.classList.remove('hidden');
-            saveData([]); // Clear
+            saveData([]); 
         });
 
-        // Split Type Toggle
         function updateSplitTypeUI() {
             if (currentState.splitType === 'all') {
                 ui.btnSplitAll.classList.add('bg-indigo-100', 'text-indigo-700', 'font-semibold');
@@ -526,7 +562,6 @@
             renderInvolvedButtons();
         });
 
-        // Calculate Logic
         ui.btnCalculate.addEventListener('click', () => {
             const expenses = currentState.expenses;
             if (expenses.length === 0) return;
@@ -585,7 +620,6 @@
                 if (creditor.amount < 0.01) j++;
             }
 
-            // Render Results
             ui.summaryTotal.textContent = totalExpense.toLocaleString() + ' ฿';
             ui.summaryCard.classList.remove('hidden');
             
@@ -612,7 +646,6 @@
                 `).join('');
             }
             
-            // Scroll to summary
             ui.summaryCard.scrollIntoView({ behavior: 'smooth', block: 'start' });
         });
 
