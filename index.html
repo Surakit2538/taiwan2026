@@ -327,6 +327,28 @@
     <!-- YOUTUBE PLAYER (HIDDEN) -->
     <div id="player" class="hidden"></div>
 
+    <!-- POPUP MODAL (Hidden by default) -->
+    <div id="mu-modal" class="fixed inset-0 z-[100] flex items-center justify-center bg-black/60 backdrop-blur-sm hidden opacity-0 transition-opacity duration-300">
+        <div class="bg-white rounded-[2rem] p-6 max-w-sm w-11/12 shadow-2xl border-4 border-buzz-purple relative transform scale-95 transition-transform duration-300" id="mu-modal-content">
+            <button onclick="closeMuModal()" class="absolute top-4 right-4 bg-gray-100 hover:bg-gray-200 text-gray-600 rounded-full w-8 h-8 flex items-center justify-center font-bold">✕</button>
+            
+            <div class="text-center mb-4">
+                <div class="inline-block bg-buzz-purple text-white px-4 py-1 rounded-full text-sm font-bold mb-2">🔮 สายมูต้องรู้</div>
+                <h3 class="text-2xl font-cartoon font-bold text-toy-blue">จุดไหว้ขอพรวัดหลงซาน</h3>
+            </div>
+            
+            <div class="space-y-4 max-h-[60vh] overflow-y-auto pr-2 text-sm text-gray-700 font-medium leading-relaxed">
+                <div id="mu-content-list" class="space-y-3">
+                    <!-- Content will be injected here -->
+                </div>
+            </div>
+
+            <div class="mt-6 text-center">
+                <button onclick="closeMuModal()" class="bg-toy-blue text-white px-6 py-2 rounded-full font-bold shadow-lg active:scale-95 transition-transform">สาธุ 🙏</button>
+            </div>
+        </div>
+    </div>
+
     <!-- JavaScript Logic -->
     <script>
         // --- YOUTUBE API SETUP ---
@@ -441,7 +463,17 @@
                         { name: "Ah Hong Zhigao Rice", link: "https://maps.app.goo.gl/yjELR5RsN8FeTVmh6" }
                     ]
                 },
-                { time: "10.30 A.M.", icon: "🙏", transport: "Walk", title: "Longshan Temple", desc: "ไหว้พระขอพรวัดหลงซาน", map: "https://maps.app.goo.gl/tyqSn8LB9DLJiPw56" },
+                { 
+                    time: "10.30 A.M.", icon: "🙏", transport: "Walk", title: "Longshan Temple", desc: "ไหว้พระขอพรวัดหลงซาน", map: "https://maps.app.goo.gl/tyqSn8LB9DLJiPw56",
+                    mu_content: [
+                        "<b>จุดที่ 1</b> โต๊ะบูชาพระศรีศากยมุนีพุทธะ, พระไภษัชยพุทธเจ้า,พระอมิตาภพุทธะ",
+                        "<b>จุดที่ 2</b> ระเบียงหน้าตำหนัก ยืนหันหน้าออกหน้าวัด ไหว้เทพเทียนกง",
+                        "<b>จุดที่ 3</b> ตำหนักกลาง เจ้าแม่กวนอิม",
+                        "<b>จุดที่ 4</b> ด้านหลังตำหนัก จุดตรงกลาง เจ้าแม่ทับทิม ขอพรเรื่องการเดินทาง",
+                        "<b>จุดที่ 5</b> เทพเจ้าหลักเมือง, เทพเจ้าตี้รู้เอ๊ยะ, เทพเจ้าเหวินชาง ขอพรเรื่องการเรียน <br><span class='text-xs text-gray-500'>*ส่วนตำหนักเล็กขอพรเรื่องสุขภาพแข็งแรง</span>",
+                        "<b>จุดที่ 6</b> ขอพรเรื่องการมีบุตร<br>• เทพกวนอู ขอพรเรื่องการเงิน<br>• เทพเย่ว์เหล่า ขอพรความรัก"
+                    ]
+                },
                 { time: "11.00 A.M.", icon: "🏙️", transport: "MRT", title: "Zhongshan District", desc: "MRT Zhongshan (G14) Exit 4 or R7", map: "https://maps.app.goo.gl/cKUinf7u2R8QRL8c6" },
                 { time: "11.30 A.M.", icon: "👕", transport: "Walk", title: "Mardi Mercredi", desc: "Shin Kong Mitsukoshi Nanxi Store 3", map: "https://maps.app.goo.gl/oSkpJ2ExqFuuXF9u8" },
                 { time: "13.00 P.M.", icon: "🍜", transport: "Walk", title: "Master Spicy Noodle", desc: "ร้านราเมงเจ้าดัง", map: "https://maps.app.goo.gl/FQoHP4fBdasqhYzs7" },
@@ -545,6 +577,16 @@
                 const colors = ['border-toy-blue', 'border-toy-yellow', 'border-toy-red', 'border-buzz-green', 'border-buzz-purple'];
                 const borderColor = colors[index % colors.length];
                 let contentHtml = `<p class="text-sm text-gray-600 font-medium leading-relaxed">${item.desc}</p>`;
+                
+                // Add Mu Button Logic
+                if (item.mu_content) {
+                    contentHtml += `
+                        <button onclick="openMuModal(${day}, ${index})" class="mt-2 w-full bg-buzz-purple text-white px-4 py-2 rounded-xl text-sm font-bold shadow-md hover:bg-purple-700 transition flex items-center justify-center gap-2 border-b-4 border-purple-800 active:border-b-0 active:translate-y-1">
+                            🔮 จุดสำหรับสายมู
+                        </button>
+                    `;
+                }
+
                 if (item.sub_places) {
                     contentHtml += `<div class="mt-3 space-y-2">`;
                     item.sub_places.forEach(place => {
@@ -563,6 +605,38 @@
                 const html = `<div class="toy-card bg-white p-5 rounded-2xl border-l-[8px] ${borderColor} flex gap-4 relative overflow-hidden group"><div class="absolute top-0 right-0 w-20 h-20 bg-gradient-to-bl from-gray-100 to-transparent -mr-8 -mt-8 rounded-full transition-all group-hover:scale-150 group-hover:bg-gray-50"></div><div class="flex flex-col items-center min-w-[4rem] z-10"><span class="text-xs font-bold text-gray-500 bg-gray-100 px-2 py-1 rounded-md mb-2 border border-gray-200 text-center">${item.time}</span><div class="text-4xl filter drop-shadow-sm transform group-hover:scale-110 group-hover:rotate-6 transition-transform duration-300">${item.icon}</div></div><div class="flex-1 z-10"><h3 class="font-bold text-toy-blue text-lg leading-tight font-cartoon mb-1">${item.title}</h3><div class="flex flex-wrap gap-2 my-1"><span class="text-[10px] bg-yellow-50 text-yellow-800 px-2 py-0.5 rounded-md font-bold uppercase tracking-wider border border-yellow-200">${item.transport}</span></div>${contentHtml}</div></div>`;
                 container.insertAdjacentHTML('beforeend', html);
             });
+        }
+
+        // --- MU POPUP LOGIC ---
+        function openMuModal(day, index) {
+            const data = tripData['day' + day][index].mu_content;
+            const listContainer = document.getElementById('mu-content-list');
+            
+            listContainer.innerHTML = data.map((text, i) => `
+                <div class="bg-purple-50 p-3 rounded-xl border border-purple-100 flex gap-3">
+                    <div class="bg-buzz-purple text-white w-6 h-6 rounded-full flex-shrink-0 flex items-center justify-center font-bold text-xs shadow-sm">${i+1}</div>
+                    <div>${text}</div>
+                </div>
+            `).join('');
+
+            const modal = document.getElementById('mu-modal');
+            modal.classList.remove('hidden');
+            // Small delay to allow display:block to apply before opacity transition
+            setTimeout(() => {
+                modal.classList.remove('opacity-0');
+                document.getElementById('mu-modal-content').classList.remove('scale-95');
+                document.getElementById('mu-modal-content').classList.add('scale-100');
+            }, 10);
+        }
+
+        function closeMuModal() {
+            const modal = document.getElementById('mu-modal');
+            modal.classList.add('opacity-0');
+            document.getElementById('mu-modal-content').classList.remove('scale-100');
+            document.getElementById('mu-modal-content').classList.add('scale-95');
+            setTimeout(() => {
+                modal.classList.add('hidden');
+            }, 300); // Wait for transition
         }
 
         function scrollToSection(id) { document.getElementById(id).scrollIntoView({ behavior: 'smooth' }); }
