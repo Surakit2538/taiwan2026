@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>โปรแกรมหารค่าใช้จ่ายออนไลน์ (Taiwan 2026)</title>
+    <title>Expense Tracker - Toy Story Theme</title>
     
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
@@ -11,208 +11,287 @@
     <!-- Lucide Icons -->
     <script src="https://unpkg.com/lucide@latest"></script>
 
+    <!-- Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;600;700&family=Prompt:wght@300;400;600;800&display=swap" rel="stylesheet">
+
+    <!-- Configuration -->
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['"Prompt"', 'sans-serif'],
+                        cartoon: ['"Fredoka"', '"Prompt"', 'sans-serif'],
+                    },
+                    colors: {
+                        'toy-blue': '#1F4788',  
+                        'toy-yellow': '#F9D615', 
+                        'toy-red': '#E81F26',    
+                        'buzz-green': '#87D336', 
+                        'buzz-purple': '#714798', 
+                        'sky-blue': '#87CEEB',
+                    }
+                }
+            }
+        }
+    </script>
+
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;500;700&display=swap');
-        body { font-family: 'Sarabun', sans-serif; }
-        /* Hide scrollbar for Chrome, Safari and Opera */
-        .no-scrollbar::-webkit-scrollbar { display: none; }
-        .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+        body {
+            background-color: #87CEEB;
+            color: #1F2937;
+            font-family: 'Prompt', sans-serif;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='600' height='600' viewBox='0 0 600 600'%3E%3Cg fill='%23FFFFFF' opacity='0.4'%3E%3Cpath d='M49.3,55.8c-0.2-1.3-0.4-2.6-0.4-3.9c0-11.8,9.6-21.4,21.4-21.4c6.6,0,12.5,3,16.4,7.7c4.6-9.1,14.1-15.3,25-15.3c15.3,0,27.8,12.5,27.8,27.8c0,1.3-0.1,2.5-0.3,3.8c7.4,2.9,12.6,10.1,12.6,18.5c0,10.9-8.8,19.7-19.7,19.7H66.2c-9.3,0-16.9-7.6-16.9-16.9C49.3,62.8,49.3,55.8,49.3,55.8z' transform='translate(50, 50) scale(0.8)'/%3E%3Cpath d='M49.3,55.8c-0.2-1.3-0.4-2.6-0.4-3.9c0-11.8,9.6-21.4,21.4-21.4c6.6,0,12.5,3,16.4,7.7c4.6-9.1,14.1-15.3,25-15.3c15.3,0,27.8,12.5,27.8,27.8c0,1.3-0.1,2.5-0.3,3.8c7.4,2.9,12.6,10.1,12.6,18.5c0,10.9-8.8,19.7-19.7,19.7H66.2c-9.3,0-16.9-7.6-16.9-16.9C49.3,62.8,49.3,55.8,49.3,55.8z' transform='translate(350, 120) scale(1.1)'/%3E%3C/g%3E%3C/svg%3E");
+            background-size: 400px 400px;
+            background-attachment: fixed;
+        }
+
+        .toy-card {
+            background: white;
+            border-radius: 20px;
+            border-bottom: 6px solid #cbd5e1;
+            transition: all 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+        
+        .input-toy {
+            border: 2px solid #e2e8f0;
+            border-radius: 12px;
+            transition: all 0.2s;
+        }
+        .input-toy:focus {
+            outline: none;
+            border-color: #1F4788;
+            box-shadow: 0 0 0 3px rgba(31, 71, 136, 0.1);
+        }
+
+        .btn-toy-primary {
+            background-color: #87D336; /* Buzz Green */
+            color: white;
+            border-bottom: 4px solid #65a328;
+            border-radius: 16px;
+            transition: all 0.1s;
+        }
+        .btn-toy-primary:active { transform: translateY(2px); border-bottom-width: 0px; }
+        .btn-toy-primary:disabled { background-color: #cbd5e1; border-color: #94a3b8; cursor: not-allowed; }
+
+        .btn-toy-action {
+            background-color: #1F4788; /* Toy Blue */
+            color: white;
+            border-bottom: 4px solid #163260;
+            border-radius: 12px;
+            transition: all 0.1s;
+        }
+        .btn-toy-action:active { transform: translateY(2px); border-bottom-width: 0px; }
+
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }
+        ::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
     </style>
 </head>
-<body class="bg-gray-50 text-gray-800 min-h-screen p-4">
+<body class="min-h-screen p-4 pb-20">
 
-    <div class="max-w-3xl mx-auto space-y-6">
+    <div class="max-w-4xl mx-auto space-y-6">
         
-        <!-- Header (Updated) -->
-        <header class="py-3 bg-white rounded-2xl shadow-sm border border-gray-100 px-4 sm:px-6 flex justify-between items-center">
-            <!-- Left Side: Logo & Status -->
-            <div class="flex items-center gap-3 sm:gap-4">
-                <div class="flex-shrink-0">
+        <!-- Header -->
+        <header class="bg-white/90 backdrop-blur rounded-[2rem] shadow-xl border-4 border-white p-4 flex justify-between items-center relative overflow-hidden">
+            <div class="absolute top-0 left-0 w-full h-2 bg-toy-red"></div>
+            
+            <div class="flex items-center gap-4 relative z-10">
+                <div class="bg-sky-100 p-2 rounded-full border-2 border-sky-200">
                     <img src="https://res.cloudinary.com/dbeuu3lmv/image/upload/v1768744718/LOGO1_u8zacw.png" 
                          alt="Logo" 
-                         class="h-10 sm:h-12 w-auto object-contain hover:scale-105 transition-transform duration-300">
+                         class="h-12 w-auto object-contain drop-shadow-md transform hover:rotate-6 transition">
                 </div>
                 <div>
-                    <h1 class="font-bold text-gray-900 leading-tight text-sm sm:text-base">หารค่าใช้จ่าย (<span id="group-name-display">...</span>)</h1>
-                    <div class="flex items-center gap-1.5 text-xs mt-0.5">
-                        <div id="status-dot" class="w-2 h-2 bg-gray-300 rounded-full"></div>
-                        <span id="status-text" class="font-medium text-gray-400">กำลังรอ...</span>
+                    <h1 class="font-cartoon font-bold text-toy-blue text-xl md:text-2xl leading-none">MONEY LOG 💰</h1>
+                    <div class="flex items-center gap-2 mt-1">
+                        <span id="group-name-display" class="text-sm font-bold text-gray-400 bg-gray-100 px-2 py-0.5 rounded-md">...</span>
+                        <div class="flex items-center gap-1 bg-white border border-gray-200 px-2 py-0.5 rounded-full shadow-sm">
+                            <div id="status-dot" class="w-2 h-2 bg-gray-300 rounded-full"></div>
+                            <span id="status-text" class="text-[10px] font-bold text-gray-400 uppercase tracking-wide">Offline</span>
+                        </div>
                     </div>
                 </div>
             </div>
 
-            <!-- Right Side: Home Button -->
-            <a href="https://surakit2538.github.io/taiwan2026/" class="bg-indigo-50 hover:bg-indigo-100 text-indigo-700 p-2.5 rounded-xl transition-colors shadow-sm flex-shrink-0" title="กลับหน้าหลัก">
-                <i data-lucide="home" width="22"></i>
+            <a href="https://surakit2538.github.io/taiwan2026/" class="btn-toy-action p-3 flex items-center justify-center group" title="กลับหน้าหลัก">
+                <i data-lucide="home" class="group-hover:scale-110 transition-transform"></i>
             </a>
         </header>
 
         <!-- Permission Error Alert -->
-        <div id="error-alert" class="hidden bg-red-50 border border-red-200 rounded-xl p-4 animate-bounce-in">
+        <div id="error-alert" class="hidden bg-red-100 border-l-8 border-red-500 rounded-xl p-4 shadow-lg animate-bounce">
             <div class="flex items-start gap-3">
-                <div class="bg-red-100 p-2 rounded-full text-red-600">
-                    <i data-lucide="alert-triangle" width="24"></i>
-                </div>
+                <div class="text-3xl">⚠️</div>
                 <div>
-                    <h3 class="font-bold text-red-800">เข้าถึงฐานข้อมูลไม่ได้ (Permission Denied)</h3>
-                    <p class="text-sm text-red-700 mt-1">
-                        กรุณาตรวจสอบ <strong>Firebase Console > Firestore Database > Rules</strong><br>
-                        ต้องตั้งค่าเป็น <code>allow read, write: if true;</code> ถึงจะใช้งานได้
+                    <h3 class="font-bold text-red-800 font-cartoon text-lg">Houston, we have a problem!</h3>
+                    <p class="text-sm text-red-700 font-medium">
+                        เข้าถึงฐานข้อมูลไม่ได้ กรุณาเช็ค Firestore Rules (allow read, write: if true;)
                     </p>
                 </div>
             </div>
         </div>
 
-        <!-- Main Content Grid -->
-        <div class="grid md:grid-cols-2 gap-6">
+        <!-- Main Content -->
+        <div class="grid md:grid-cols-2 gap-6 items-start">
             
-            <!-- Left Column: Inputs -->
-            <div class="space-y-6">
+            <!-- Left: Add Form -->
+            <div class="toy-card p-6 relative overflow-hidden ring-4 ring-white/50">
+                <div class="absolute -right-6 -top-6 bg-toy-yellow w-24 h-24 rounded-full opacity-20 z-0"></div>
                 
-                <!-- Add Expense Form -->
-                <div class="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 relative overflow-hidden h-full">
-                    <div class="absolute top-0 right-0 p-4 opacity-10 pointer-events-none">
-                        <i data-lucide="receipt" width="120" height="120"></i>
-                    </div>
-                    <h2 class="text-lg font-semibold flex items-center gap-2 mb-4 text-indigo-700">
-                        <i data-lucide="receipt" width="20"></i>
-                        เพิ่มรายการจ่าย
-                    </h2>
+                <h2 class="text-xl font-cartoon font-bold text-toy-blue flex items-center gap-2 mb-6 relative z-10">
+                    <span class="bg-toy-blue text-white p-1.5 rounded-lg text-sm shadow-sm"><i data-lucide="plus-circle" width="18"></i></span>
+                    New Expense
+                </h2>
 
-                    <form id="expense-form" class="space-y-4 relative z-10">
-                        <!-- Payer -->
-                        <div>
-                            <label class="block text-xs font-bold text-gray-500 uppercase tracking-wide mb-1">ใครจ่าย?</label>
-                            <div id="payer-buttons" class="grid grid-cols-3 gap-2">
-                                <!-- Generated by JS -->
-                            </div>
-                            <input type="hidden" id="input-payer">
+                <form id="expense-form" class="space-y-5 relative z-10">
+                    <!-- Payer -->
+                    <div>
+                        <label class="block text-xs font-bold text-gray-500 uppercase tracking-wide mb-2 pl-1">Who Paid? 🤠</label>
+                        <div id="payer-buttons" class="grid grid-cols-3 gap-2">
+                            <!-- JS Generated -->
                         </div>
-                        
-                        <div class="grid grid-cols-2 gap-4">
-                            <!-- Description -->
-                            <div class="col-span-2">
-                                <label class="block text-xs font-bold text-gray-500 uppercase tracking-wide mb-1">ค่าอะไร?</label>
-                                <input type="text" id="input-desc" required placeholder="เช่น มื้อเย็น, ค่าทางด่วน" class="w-full px-4 py-2 rounded-xl border border-gray-200 focus:outline-none focus:ring-2 focus:ring-indigo-500 transition-all">
-                            </div>
-
-                            <!-- Amount -->
-                            <div class="col-span-2">
-                                <label class="block text-xs font-bold text-gray-500 uppercase tracking-wide mb-1">เท่าไหร่ (บาท)</label>
-                                <input type="number" id="input-amount" required min="0" step="0.01" placeholder="0.00" class="w-full px-4 py-2 rounded-xl border border-gray-200 focus:outline-none focus:ring-2 focus:ring-indigo-500 font-mono text-lg transition-all">
-                            </div>
-                        </div>
-
-                        <!-- Splitting Logic -->
-                        <div class="bg-gray-50 p-3 rounded-xl border border-gray-200">
-                            <label class="block text-xs font-bold text-gray-500 uppercase tracking-wide mb-2">หารยังไง?</label>
-                            
-                            <div class="flex bg-white p-1 rounded-lg border border-gray-200 mb-3">
-                                <button type="button" id="btn-split-all" class="flex-1 py-1.5 text-sm rounded-md transition-colors flex items-center justify-center gap-2 bg-indigo-100 text-indigo-700 font-semibold">
-                                    <i data-lucide="users" width="16"></i> หารเท่าทุกคน
-                                </button>
-                                <button type="button" id="btn-split-specific" class="flex-1 py-1.5 text-sm rounded-md transition-colors flex items-center justify-center gap-2 text-gray-500 hover:text-gray-700">
-                                    <i data-lucide="check" width="16"></i> ระบุคนหาร
-                                </button>
-                            </div>
-
-                            <div id="specific-split-options" class="hidden space-y-2 animate-fade-in">
-                                <div class="flex justify-between items-center mb-1">
-                                    <span class="text-xs text-gray-400">เลือกคนที่ต้องจ่าย</span>
-                                    <button type="button" id="btn-select-all" class="text-xs text-indigo-600 underline">เลือกทุกคน</button>
-                                </div>
-                                <div id="involved-buttons" class="grid grid-cols-2 gap-2">
-                                    <!-- Generated by JS -->
-                                </div>
-                            </div>
-                        </div>
-
-                        <button type="submit" class="w-full bg-indigo-600 text-white py-3 rounded-xl hover:bg-indigo-700 transition-colors font-medium flex justify-center items-center gap-2 shadow-lg shadow-indigo-200 mt-2 active:scale-95">
-                            <i data-lucide="plus" width="18"></i> บันทึกรายการ
-                        </button>
-                    </form>
-                </div>
-            </div>
-
-            <!-- Right Column: List -->
-            <div class="space-y-6">
-                <!-- Expense List -->
-                <div class="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 h-full max-h-[600px] overflow-y-auto relative">
-                    <div class="flex justify-between items-center mb-4 sticky top-0 bg-white z-10 pb-2 border-b border-gray-100">
-                        <h2 class="text-lg font-semibold text-gray-800 flex items-center gap-2">
-                            รายการ (<span id="count-display">0</span>)
-                            <span id="total-badge" class="hidden text-xs font-normal text-gray-500 bg-gray-100 px-2 py-0.5 rounded-full"></span>
-                        </h2>
-                        
-                        <div id="clear-actions">
-                            <button id="btn-ask-clear" class="text-xs text-red-500 hover:bg-red-50 px-2 py-1 rounded transition-colors flex items-center gap-1">
-                                <i data-lucide="rotate-ccw" width="12"></i> ล้างกลุ่ม
-                            </button>
-                            <div id="confirm-clear" class="hidden flex items-center gap-1 bg-red-50 p-1 rounded-lg">
-                                <span class="text-xs text-red-700 font-medium ml-1">ยืนยัน?</span>
-                                <button id="btn-confirm-clear" class="bg-red-500 text-white p-1 rounded hover:bg-red-600"><i data-lucide="check" width="12"></i></button>
-                                <button id="btn-cancel-clear" class="bg-white text-gray-500 p-1 rounded hover:bg-gray-100 border border-gray-200"><i data-lucide="x" width="12"></i></button>
-                            </div>
-                        </div>
+                        <input type="hidden" id="input-payer">
                     </div>
                     
-                    <div id="loading-indicator" class="text-center py-12 text-gray-400 hidden">
-                        <div class="animate-spin inline-block mb-2"><i data-lucide="loader-2"></i></div>
-                        <p>กำลังโหลดข้อมูล...</p>
+                    <div class="space-y-4">
+                        <!-- Description -->
+                        <div>
+                            <label class="block text-xs font-bold text-gray-500 uppercase tracking-wide mb-1 pl-1">For What? 🏷️</label>
+                            <input type="text" id="input-desc" required placeholder="เช่น ค่าข้าวเย็น, ค่าแท็กซี่" class="input-toy w-full px-4 py-3 bg-gray-50 text-gray-700 font-medium placeholder-gray-400">
+                        </div>
+
+                        <!-- Amount -->
+                        <div>
+                            <label class="block text-xs font-bold text-gray-500 uppercase tracking-wide mb-1 pl-1">How Much? 💵</label>
+                            <div class="relative">
+                                <input type="number" id="input-amount" required min="0" step="0.01" placeholder="0.00" class="input-toy w-full pl-4 pr-12 py-3 bg-gray-50 text-gray-800 font-cartoon text-xl">
+                                <span class="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 font-bold text-sm">THB</span>
+                            </div>
+                        </div>
                     </div>
 
-                    <div id="empty-state" class="text-center py-12 text-gray-400 bg-gray-50 rounded-xl border border-dashed border-gray-200 hidden">
-                        <div class="mx-auto mb-2 opacity-20 w-10 h-10 flex justify-center items-center"><i data-lucide="receipt" width="40" height="40"></i></div>
-                        <p>ยังไม่มีรายการในกลุ่มนี้</p>
-                        <p class="text-xs mt-1">เริ่มจดรายการแรกเลย!</p>
+                    <!-- Split Logic -->
+                    <div class="bg-sky-50 p-4 rounded-2xl border-2 border-sky-100 border-dashed">
+                        <label class="block text-xs font-bold text-toy-blue uppercase tracking-wide mb-3">Split Method 🍕</label>
+                        
+                        <div class="flex bg-white p-1.5 rounded-xl border border-sky-200 mb-3 shadow-sm">
+                            <button type="button" id="btn-split-all" class="flex-1 py-2 text-sm rounded-lg transition-all font-bold flex items-center justify-center gap-2 bg-toy-blue text-white shadow-md">
+                                All
+                            </button>
+                            <button type="button" id="btn-split-specific" class="flex-1 py-2 text-sm rounded-lg transition-all font-bold flex items-center justify-center gap-2 text-gray-400 hover:text-toy-blue">
+                                Select
+                            </button>
+                        </div>
+
+                        <div id="specific-split-options" class="hidden space-y-3">
+                            <div class="flex justify-between items-center px-1">
+                                <span class="text-xs font-bold text-gray-400">For whom?</span>
+                                <button type="button" id="btn-select-all" class="text-[10px] font-bold text-toy-blue bg-white px-2 py-1 rounded border border-toy-blue hover:bg-toy-blue hover:text-white transition">Select All</button>
+                            </div>
+                            <div id="involved-buttons" class="grid grid-cols-2 gap-2">
+                                <!-- JS Generated -->
+                            </div>
+                        </div>
                     </div>
 
-                    <div id="expenses-container" class="space-y-3">
-                        <!-- Expenses injected here -->
+                    <button type="submit" class="btn-toy-primary w-full py-4 font-cartoon text-xl shadow-lg shadow-green-200/50 flex justify-center items-center gap-2">
+                        <span>Save Record</span> 🚀
+                    </button>
+                </form>
+            </div>
+
+            <!-- Right: List -->
+            <div class="space-y-4">
+                <div class="toy-card p-6 h-[600px] flex flex-col relative ring-4 ring-white/50">
+                    <!-- List Header -->
+                    <div class="flex justify-between items-center mb-4 pb-4 border-b-2 border-dashed border-gray-100">
+                        <h2 class="text-xl font-cartoon font-bold text-toy-blue flex items-center gap-2">
+                            <span class="bg-toy-yellow text-toy-blue p-1.5 rounded-lg text-sm shadow-sm"><i data-lucide="list" width="18"></i></span>
+                            List (<span id="count-display">0</span>)
+                        </h2>
+                        <span id="total-badge" class="hidden font-cartoon font-bold text-buzz-green bg-green-50 px-3 py-1 rounded-full border border-green-200 text-sm"></span>
+                        
+                        <div id="clear-actions" class="ml-auto">
+                            <button id="btn-ask-clear" class="text-xs font-bold text-gray-400 hover:text-toy-red bg-gray-50 hover:bg-red-50 px-3 py-1.5 rounded-lg transition-colors">
+                                Clear All
+                            </button>
+                            <div id="confirm-clear" class="hidden flex items-center gap-2 bg-red-50 p-1.5 rounded-lg border border-red-100">
+                                <span class="text-xs text-red-600 font-bold">Sure?</span>
+                                <button id="btn-confirm-clear" class="bg-toy-red text-white w-6 h-6 rounded flex items-center justify-center shadow-sm"><i data-lucide="check" width="12"></i></button>
+                                <button id="btn-cancel-clear" class="bg-white text-gray-500 w-6 h-6 rounded flex items-center justify-center border border-gray-200"><i data-lucide="x" width="12"></i></button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Scroll Area -->
+                    <div class="flex-1 overflow-y-auto pr-2 relative" id="expenses-scroll-area">
+                        <div id="loading-indicator" class="absolute inset-0 flex flex-col items-center justify-center text-gray-400 bg-white/80 z-10 hidden">
+                            <div class="animate-bounce text-4xl mb-2">👾</div>
+                            <p class="font-bold text-sm">Loading Data...</p>
+                        </div>
+
+                        <div id="empty-state" class="flex flex-col items-center justify-center h-full text-center text-gray-400 hidden">
+                            <div class="w-24 h-24 bg-gray-50 rounded-full flex items-center justify-center mb-4 border-4 border-gray-100">
+                                <i data-lucide="clipboard-list" width="40" class="opacity-20"></i>
+                            </div>
+                            <p class="font-bold text-lg text-gray-300">No Records Yet</p>
+                            <p class="text-xs text-gray-300">Start adding expenses!</p>
+                        </div>
+
+                        <div id="expenses-container" class="space-y-3 pb-4">
+                            <!-- JS Injected -->
+                        </div>
                     </div>
                 </div>
+
+                <!-- Calculate Button -->
+                <button id="btn-calculate" disabled class="w-full bg-toy-blue text-white py-4 rounded-2xl border-b-[6px] border-blue-900 font-cartoon text-xl shadow-xl flex justify-center items-center gap-3 disabled:opacity-50 disabled:border-b-4 disabled:bg-slate-400 disabled:border-slate-500 disabled:cursor-not-allowed transform active:translate-y-1 active:border-b-0 transition-all hover:bg-blue-700">
+                    <i data-lucide="calculator" width="24"></i> 
+                    <span>CALCULATE</span>
+                </button>
             </div>
         </div>
 
-        <!-- Bottom Section: Action & Summary (Full Width) -->
-        <div class="space-y-4 pt-2">
-            <button id="btn-calculate" disabled class="w-full bg-gray-900 text-white py-4 rounded-2xl hover:bg-black transition-colors font-bold text-lg shadow-xl flex justify-center items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed transform active:scale-95 duration-100">
-                <i data-lucide="calculator" width="24"></i> สรุปยอดเคลียร์บิล
-            </button>
-
-            <div id="summary-card" class="hidden bg-white rounded-2xl shadow-lg border border-indigo-100 overflow-hidden animate-in zoom-in-95 duration-300">
-                <div class="bg-gradient-to-r from-indigo-600 to-indigo-800 p-4 text-white">
-                    <div class="flex justify-between items-center">
-                        <span class="text-indigo-100">ยอดรวมทั้งหมด</span>
-                        <span id="summary-total" class="font-bold text-2xl">0.00 ฿</span>
-                    </div>
+        <!-- Summary Modal/Card -->
+        <div id="summary-card" class="hidden bg-white rounded-[2rem] shadow-2xl border-4 border-buzz-green overflow-hidden animate-in fade-in slide-in-from-bottom-10 duration-500 relative ring-8 ring-green-100">
+            <!-- Header -->
+            <div class="bg-buzz-green p-6 text-white flex justify-between items-center border-b-4 border-green-600 relative overflow-hidden">
+                <div class="absolute -right-4 -top-4 text-white opacity-20 transform rotate-12">
+                    <i data-lucide="coins" width="100" height="100"></i>
                 </div>
+                <div>
+                    <h2 class="font-cartoon text-2xl font-bold shadow-sm">MISSION REPORT</h2>
+                    <p class="text-xs font-medium text-green-100 opacity-90">สรุปยอดที่ต้องเคลียร์กัน</p>
+                </div>
+                <div class="text-right relative z-10">
+                    <span class="block text-xs font-bold text-green-100 uppercase">Total Spent</span>
+                    <span id="summary-total" class="font-cartoon text-3xl font-bold drop-shadow-md">0.00</span>
+                </div>
+            </div>
 
-                <div class="p-5">
-                    <h3 class="font-bold text-gray-800 mb-4 flex items-center gap-2 pb-2 border-b border-gray-100">
-                        <i data-lucide="refresh-ccw" width="18" class="text-green-600"></i>
-                        ต้องโอนให้กันยังไง?
-                    </h3>
-                    
-                    <div id="settlements-container" class="grid md:grid-cols-2 gap-3">
-                        <!-- Settlements injected here -->
-                    </div>
-                    
-                    <div id="settlement-empty" class="hidden text-center text-green-600 py-4 font-medium bg-green-50 rounded-xl border border-green-100 col-span-2">
-                        <div class="mx-auto mb-1 flex justify-center"><i data-lucide="check" width="24"></i></div>
-                        ทุกคนจ่ายครบถ้วนแล้ว! 🎉
-                    </div>
+            <div class="p-6 bg-green-50/50">
+                <div id="settlements-container" class="grid md:grid-cols-2 gap-4">
+                    <!-- JS Injected -->
+                </div>
+                
+                <div id="settlement-empty" class="hidden text-center py-8">
+                    <div class="inline-block p-4 bg-green-100 rounded-full mb-3 text-buzz-green text-4xl animate-bounce">🎉</div>
+                    <p class="font-bold text-buzz-green text-lg">Mission Complete!</p>
+                    <p class="text-sm text-gray-500">ทุกคนจ่ายครบหมดแล้ว เย้!</p>
                 </div>
             </div>
         </div>
 
     </div>
 
-    <!-- Firebase SDKs -->
+    <!-- Firebase SDKs & Logic -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
         import { getFirestore, doc, setDoc, onSnapshot, updateDoc } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
-        import { getAuth, signInAnonymously, onAuthStateChanged, signInWithCustomToken } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+        import { getAuth, signInAnonymously, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
 
         // Global State
         const FIXED_USERS = ['Game', 'Care', 'MAM', 'POP', 'BRIGHT', 'NATTY'];
@@ -222,20 +301,17 @@
             user: null,
             expenses: [],
             payer: FIXED_USERS[0],
-            splitType: 'all', // 'all' or 'specific'
+            splitType: 'all',
             involvedUsers: [...FIXED_USERS],
-            isSyncing: false
         };
 
-        // --- Firebase Configuration ---
         const firebaseConfig = {
             apiKey: "AIzaSyAf9VO2hEl0R9re562KfZjcbjTrhNXyofw",
             authDomain: "taiwan2026-663d5.firebaseapp.com",
             projectId: "taiwan2026-663d5",
             storageBucket: "taiwan2026-663d5.firebasestorage.app",
             messagingSenderId: "118390726924",
-            appId: "1:118390726924:web:129121eb030c333636a929",
-            measurementId: "G-M8F00PP277"
+            appId: "1:118390726924:web:129121eb030c333636a929"
         };
         const appId = "taiwan-trip-data";
 
@@ -243,7 +319,7 @@
         const auth = getAuth(app);
         const db = getFirestore(app);
 
-        // --- DOM Elements ---
+        // DOM Elements
         const ui = {
             groupName: document.getElementById('group-name-display'),
             statusText: document.getElementById('status-text'),
@@ -275,24 +351,16 @@
             settlementEmpty: document.getElementById('settlement-empty')
         };
 
-        // --- Auth & Init ---
+        // Auth
         async function initAuth() {
-            try {
-                await signInAnonymously(auth);
-            } catch (error) {
-                console.error("Auth Error:", error);
-                ui.statusText.textContent = 'Auth Failed';
-                ui.statusText.classList.add('text-red-500');
-            }
+            try { await signInAnonymously(auth); } 
+            catch (error) { console.error("Auth Fail", error); }
         }
 
         onAuthStateChanged(auth, (user) => {
             currentState.user = user;
-            if (user) {
-                startSync();
-            } else {
-                ui.statusText.textContent = 'กำลังยืนยันตัวตน...';
-            }
+            if (user) startSync();
+            else ui.statusText.textContent = 'Auth...';
         });
 
         initAuth();
@@ -302,81 +370,60 @@
         renderInvolvedButtons();
         lucide.createIcons();
 
-        // --- Sync Data ---
+        // Sync
         function startSync() {
-            ui.statusText.textContent = 'กำลังเชื่อมต่อ...';
+            ui.statusText.textContent = 'Connecting...';
             ui.statusText.classList.remove('text-red-500', 'text-gray-400');
-            ui.statusText.classList.add('text-green-600');
-            ui.statusDot.classList.remove('bg-gray-300', 'bg-red-500');
-            ui.statusDot.classList.add('bg-green-500', 'animate-pulse');
+            ui.statusText.classList.add('text-buzz-green');
+            ui.statusDot.className = 'w-2 h-2 rounded-full bg-buzz-green animate-pulse';
             
             ui.loadingIndicator.classList.remove('hidden');
             ui.emptyState.classList.add('hidden');
-            ui.errorAlert.classList.add('hidden'); // Hide error initially
+            ui.errorAlert.classList.add('hidden');
 
             const docRef = doc(db, 'artifacts', appId, 'public', 'data', 'bill_groups', DEFAULT_GROUP_NAME);
 
             onSnapshot(docRef, (docSnap) => {
                 ui.loadingIndicator.classList.add('hidden');
-                ui.statusText.textContent = 'ออนไลน์';
+                ui.statusText.textContent = 'Online';
                 
                 if (docSnap.exists()) {
-                    const data = docSnap.data();
-                    currentState.expenses = data.expenses || [];
+                    currentState.expenses = docSnap.data().expenses || [];
                 } else {
-                    // Try to create the document
-                    setDoc(docRef, { expenses: [], createdAt: new Date().toISOString() }, { merge: true })
-                        .catch(err => {
-                             // This specific error catch is for setDoc failure (write permission)
-                             console.error("Init Doc Error:", err);
-                        });
+                    setDoc(docRef, { expenses: [], createdAt: new Date().toISOString() }, { merge: true }).catch(console.error);
                     currentState.expenses = [];
                 }
                 renderExpenses();
-                ui.summaryCard.classList.add('hidden');
             }, (error) => {
                 console.error("Sync Error:", error);
-                
                 ui.loadingIndicator.classList.add('hidden');
-                ui.statusDot.classList.remove('bg-green-500', 'animate-pulse');
-                ui.statusDot.classList.add('bg-red-500');
-                ui.statusText.classList.remove('text-green-600');
-                ui.statusText.classList.add('text-red-500');
-                
-                if (error.code === 'permission-denied') {
-                    ui.statusText.textContent = 'ถูกปฏิเสธสิทธิ์';
-                    ui.errorAlert.classList.remove('hidden'); // Show big alert
-                } else {
-                    ui.statusText.textContent = 'เกิดข้อผิดพลาด';
-                }
+                ui.statusDot.className = 'w-2 h-2 rounded-full bg-toy-red';
+                ui.statusText.textContent = 'Error';
+                ui.statusText.classList.add('text-toy-red');
+                if (error.code === 'permission-denied') ui.errorAlert.classList.remove('hidden');
             });
         }
 
         async function saveData(newExpenses) {
             if (!currentState.user) return;
-            ui.statusText.innerHTML = '<span class="animate-spin inline-block"><i data-lucide="loader-2" width="12"></i></span> บันทึก...';
-            lucide.createIcons();
-            
+            ui.statusText.textContent = 'Saving...';
             try {
                 const docRef = doc(db, 'artifacts', appId, 'public', 'data', 'bill_groups', DEFAULT_GROUP_NAME);
                 await updateDoc(docRef, { expenses: newExpenses });
-                ui.statusText.textContent = 'ออนไลน์';
+                ui.statusText.textContent = 'Online';
             } catch (e) {
                 console.error("Save Error:", e);
-                ui.statusText.textContent = 'บันทึกไม่สำเร็จ';
-                if (e.code === 'permission-denied') {
-                     ui.errorAlert.classList.remove('hidden');
-                }
+                ui.statusText.textContent = 'Failed';
             }
         }
 
-        // --- UI Rendering ---
+        // Render Functions (Updated for Toy Theme)
         function renderPayerButtons() {
             ui.payerButtons.innerHTML = FIXED_USERS.map(u => `
-                <button type="button" class="payer-btn px-2 py-2 text-sm rounded-lg border transition-all ${
+                <button type="button" class="payer-btn py-2.5 px-1 rounded-xl text-sm font-bold transition-all border-b-4 active:border-b-0 active:translate-y-1 ${
                     currentState.payer === u 
-                    ? 'bg-indigo-600 text-white border-indigo-600 shadow-md transform scale-105' 
-                    : 'bg-white text-gray-600 border-gray-200 hover:border-indigo-300'
+                    ? 'bg-toy-blue text-white border-blue-900 shadow-lg scale-105 z-10' 
+                    : 'bg-white text-gray-400 border-gray-200 hover:border-gray-300'
                 }" data-user="${u}">
                     ${u}
                 </button>
@@ -395,29 +442,30 @@
             ui.involvedButtons.innerHTML = FIXED_USERS.map(u => {
                 const isSelected = currentState.involvedUsers.includes(u);
                 return `
-                <button type="button" class="involved-btn px-2 py-1.5 text-xs rounded-md border text-left flex items-center gap-2 transition-all ${
+                <button type="button" class="involved-btn px-3 py-2 text-xs font-bold rounded-lg border-2 transition-all flex items-center gap-2 ${
                     isSelected
-                    ? 'bg-green-50 border-green-200 text-green-800'
-                    : 'bg-white border-gray-200 text-gray-400'
+                    ? 'bg-green-50 border-buzz-green text-buzz-green shadow-sm'
+                    : 'bg-white border-gray-100 text-gray-300'
                 }" data-user="${u}">
-                    <div class="w-3 h-3 rounded-full border ${isSelected ? 'bg-green-500 border-green-500' : 'bg-transparent border-gray-300'}"></div>
+                    <div class="w-4 h-4 rounded-full flex items-center justify-center border ${isSelected ? 'bg-buzz-green border-buzz-green text-white' : 'border-gray-200 bg-gray-50'}">
+                        ${isSelected ? '<i data-lucide="check" width="10"></i>' : ''}
+                    </div>
                     ${u}
                 </button>
             `}).join('');
-
+            
             document.querySelectorAll('.involved-btn').forEach(btn => {
                 btn.addEventListener('click', () => {
                     const u = btn.dataset.user;
                     if (currentState.involvedUsers.includes(u)) {
-                        if (currentState.involvedUsers.length > 1) {
-                            currentState.involvedUsers = currentState.involvedUsers.filter(user => user !== u);
-                        }
+                        if (currentState.involvedUsers.length > 1) currentState.involvedUsers = currentState.involvedUsers.filter(user => user !== u);
                     } else {
                         currentState.involvedUsers.push(u);
                     }
                     renderInvolvedButtons();
                 });
             });
+            lucide.createIcons();
         }
 
         function renderExpenses() {
@@ -426,7 +474,7 @@
             
             if (expenses.length > 0) {
                 const total = expenses.reduce((sum, ex) => sum + ex.amount, 0);
-                ui.totalBadge.textContent = `รวม ${total.toLocaleString()} ฿`;
+                ui.totalBadge.textContent = `${total.toLocaleString()} ฿`;
                 ui.totalBadge.classList.remove('hidden');
                 ui.btnCalculate.disabled = false;
                 ui.emptyState.classList.add('hidden');
@@ -436,222 +484,148 @@
                 ui.emptyState.classList.remove('hidden');
             }
 
+            // Toy Theme List Items
             ui.expensesContainer.innerHTML = expenses.slice().reverse().map(ex => `
-                <div class="p-3 bg-white rounded-xl border border-gray-100 shadow-sm hover:shadow-md transition-shadow">
-                    <div class="flex justify-between items-start mb-1">
-                        <div>
-                            <div class="font-bold text-gray-800 text-lg">${ex.description}</div>
-                            <div class="text-xs text-gray-500 mt-0.5">
-                                จ่ายโดย: <span class="font-semibold text-indigo-600 bg-indigo-50 px-1.5 py-0.5 rounded">${ex.payer}</span>
+                <div class="group relative bg-white p-4 rounded-2xl border-2 border-gray-100 shadow-sm hover:shadow-md hover:border-sky-200 transition-all">
+                    <div class="flex justify-between items-start mb-2">
+                        <div class="flex items-start gap-3">
+                            <div class="w-10 h-10 rounded-full bg-toy-yellow/20 flex items-center justify-center text-toy-yellow border-2 border-toy-yellow/50">
+                                <span class="font-bold text-xs">${ex.payer.substring(0,1)}</span>
+                            </div>
+                            <div>
+                                <h3 class="font-bold text-gray-700 leading-tight">${ex.description}</h3>
+                                <div class="text-[10px] font-bold text-gray-400 mt-1 uppercase">
+                                    Paid by <span class="text-toy-blue">${ex.payer}</span>
+                                </div>
                             </div>
                         </div>
-                        <div class="flex flex-col items-end gap-1">
-                            <span class="font-bold text-gray-800 text-lg">${ex.amount.toLocaleString()}</span>
-                            <button class="delete-btn text-gray-300 hover:text-red-500 p-1" data-id="${ex.id}">
-                                <i data-lucide="trash-2" width="14"></i>
+                        <div class="text-right">
+                            <div class="font-cartoon text-xl font-bold text-toy-blue">${ex.amount.toLocaleString()}</div>
+                            <button class="delete-btn text-gray-300 hover:text-toy-red hover:bg-red-50 p-1.5 rounded-lg transition-colors absolute bottom-2 right-2 opacity-0 group-hover:opacity-100" data-id="${ex.id}">
+                                <i data-lucide="trash-2" width="16"></i>
                             </button>
                         </div>
                     </div>
-                    <div class="mt-2 pt-2 border-t border-gray-50 flex flex-wrap gap-1">
-                        <span className="text-[10px] uppercase font-bold text-gray-400 mr-1 self-center">คนหาร:</span>
-                        ${ex.splitType === 'all' 
-                            ? '<span class="text-xs bg-gray-100 text-gray-600 px-2 py-0.5 rounded-full">ทุกคน (6)</span>' 
-                            : ex.involved.map(u => `<span class="text-[10px] bg-green-50 text-green-700 px-1.5 py-0.5 rounded border border-green-100">${u}</span>`).join('')
+                    <div class="pt-2 border-t border-dashed border-gray-100 flex flex-wrap gap-1 mt-2">
+                         ${ex.splitType === 'all' 
+                            ? '<span class="text-[10px] font-bold bg-sky-50 text-sky-600 px-2 py-1 rounded-md border border-sky-100">All (6)</span>' 
+                            : ex.involved.map(u => `<span class="text-[10px] font-bold bg-gray-50 text-gray-500 px-2 py-1 rounded-md border border-gray-100">${u}</span>`).join('')
                         }
                     </div>
                 </div>
             `).join('');
 
             document.querySelectorAll('.delete-btn').forEach(btn => {
-                btn.addEventListener('click', (e) => {
-                    const id = Number(e.currentTarget.dataset.id);
-                    removeExpense(id);
-                });
+                btn.addEventListener('click', (e) => removeExpense(Number(e.currentTarget.dataset.id)));
             });
-
             lucide.createIcons();
         }
 
-        // --- Logic Operations ---
-
+        // Logic Listeners
         ui.form.addEventListener('submit', async (e) => {
             e.preventDefault();
             const desc = ui.inputDesc.value.trim();
             const amount = parseFloat(ui.inputAmount.value);
-            const payer = currentState.payer;
-            const splitType = currentState.splitType;
-            const involved = splitType === 'all' ? FIXED_USERS : currentState.involvedUsers;
+            const involved = currentState.splitType === 'all' ? FIXED_USERS : currentState.involvedUsers;
 
-            if (desc && amount && payer && involved.length > 0) {
+            if (desc && amount && currentState.payer && involved.length > 0) {
                 const newExpense = {
-                    id: Date.now(),
-                    description: desc,
-                    amount: amount,
-                    payer: payer,
-                    splitType: splitType,
-                    involved: involved,
-                    addedBy: currentState.user?.uid.substring(0, 5) || 'anon'
+                    id: Date.now(), description: desc, amount: amount,
+                    payer: currentState.payer, splitType: currentState.splitType,
+                    involved: involved, addedBy: currentState.user?.uid.substring(0, 5) || 'anon'
                 };
-
-                const newExpenses = [...currentState.expenses, newExpense];
                 
-                ui.inputDesc.value = '';
-                ui.inputAmount.value = '';
-                currentState.splitType = 'all';
-                updateSplitTypeUI();
-                currentState.involvedUsers = [...FIXED_USERS];
-                renderInvolvedButtons();
-                
-                saveData(newExpenses);
+                ui.inputDesc.value = ''; ui.inputAmount.value = '';
+                currentState.splitType = 'all'; updateSplitTypeUI();
+                currentState.involvedUsers = [...FIXED_USERS]; renderInvolvedButtons();
+                saveData([...currentState.expenses, newExpense]);
             }
         });
 
         function removeExpense(id) {
-            const newExpenses = currentState.expenses.filter(ex => ex.id !== id);
-            saveData(newExpenses);
+            saveData(currentState.expenses.filter(ex => ex.id !== id));
         }
 
-        ui.btnAskClear.addEventListener('click', () => {
-            ui.btnAskClear.parentElement.classList.add('hidden');
-            ui.confirmClear.classList.remove('hidden');
-            ui.confirmClear.classList.add('flex');
-        });
-
-        ui.btnCancelClear.addEventListener('click', () => {
-            ui.confirmClear.classList.add('hidden');
-            ui.confirmClear.classList.remove('flex');
-            ui.btnAskClear.parentElement.classList.remove('hidden');
-        });
-
-        ui.btnConfirmClear.addEventListener('click', () => {
-            ui.confirmClear.classList.add('hidden');
-            ui.confirmClear.classList.remove('flex');
-            ui.btnAskClear.parentElement.classList.remove('hidden');
+        // Clear UI Logic
+        ui.btnAskClear.addEventListener('click', () => { ui.btnAskClear.parentElement.classList.add('hidden'); ui.confirmClear.classList.remove('hidden'); ui.confirmClear.classList.add('flex'); });
+        ui.btnCancelClear.addEventListener('click', () => { ui.confirmClear.classList.add('hidden'); ui.confirmClear.classList.remove('flex'); ui.btnAskClear.parentElement.classList.remove('hidden'); });
+        ui.btnConfirmClear.addEventListener('click', () => { 
+            ui.confirmClear.classList.add('hidden'); ui.confirmClear.classList.remove('flex'); ui.btnAskClear.parentElement.classList.remove('hidden'); 
             saveData([]); 
         });
 
+        // Split Type Toggle
         function updateSplitTypeUI() {
             if (currentState.splitType === 'all') {
-                ui.btnSplitAll.classList.add('bg-indigo-100', 'text-indigo-700', 'font-semibold');
-                ui.btnSplitAll.classList.remove('text-gray-500', 'hover:text-gray-700');
-                
-                ui.btnSplitSpecific.classList.remove('bg-indigo-100', 'text-indigo-700', 'font-semibold');
-                ui.btnSplitSpecific.classList.add('text-gray-500', 'hover:text-gray-700');
-                
+                ui.btnSplitAll.classList.replace('bg-white', 'bg-toy-blue'); ui.btnSplitAll.classList.replace('text-gray-400', 'text-white'); ui.btnSplitAll.classList.add('shadow-md');
+                ui.btnSplitSpecific.classList.replace('bg-toy-blue', 'bg-white'); ui.btnSplitSpecific.classList.replace('text-white', 'text-gray-400'); ui.btnSplitSpecific.classList.remove('shadow-md');
                 ui.specificOptions.classList.add('hidden');
             } else {
-                ui.btnSplitSpecific.classList.add('bg-indigo-100', 'text-indigo-700', 'font-semibold');
-                ui.btnSplitSpecific.classList.remove('text-gray-500', 'hover:text-gray-700');
-                
-                ui.btnSplitAll.classList.remove('bg-indigo-100', 'text-indigo-700', 'font-semibold');
-                ui.btnSplitAll.classList.add('text-gray-500', 'hover:text-gray-700');
-                
+                ui.btnSplitSpecific.classList.replace('bg-white', 'bg-toy-blue'); ui.btnSplitSpecific.classList.replace('text-gray-400', 'text-white'); ui.btnSplitSpecific.classList.add('shadow-md');
+                ui.btnSplitAll.classList.replace('bg-toy-blue', 'bg-white'); ui.btnSplitAll.classList.replace('text-white', 'text-gray-400'); ui.btnSplitAll.classList.remove('shadow-md');
                 ui.specificOptions.classList.remove('hidden');
             }
         }
+        ui.btnSplitAll.addEventListener('click', () => { currentState.splitType = 'all'; updateSplitTypeUI(); });
+        ui.btnSplitSpecific.addEventListener('click', () => { currentState.splitType = 'specific'; updateSplitTypeUI(); });
+        ui.btnSelectAll.addEventListener('click', () => { currentState.involvedUsers = [...FIXED_USERS]; renderInvolvedButtons(); });
 
-        ui.btnSplitAll.addEventListener('click', () => {
-            currentState.splitType = 'all';
-            updateSplitTypeUI();
-        });
-
-        ui.btnSplitSpecific.addEventListener('click', () => {
-            currentState.splitType = 'specific';
-            updateSplitTypeUI();
-        });
-
-        ui.btnSelectAll.addEventListener('click', () => {
-            currentState.involvedUsers = [...FIXED_USERS];
-            renderInvolvedButtons();
-        });
-
+        // Calculate Logic
         ui.btnCalculate.addEventListener('click', () => {
             const expenses = currentState.expenses;
             if (expenses.length === 0) return;
 
             const totalExpense = expenses.reduce((sum, ex) => sum + ex.amount, 0);
-            
-            let balances = {};
-            FIXED_USERS.forEach(u => balances[u] = 0); 
+            let balances = {}; FIXED_USERS.forEach(u => balances[u] = 0);
 
             expenses.forEach(ex => {
-                const paidAmount = ex.amount;
-                const share = paidAmount / ex.involved.length;
-
-                if (balances[ex.payer] !== undefined) {
-                    balances[ex.payer] += paidAmount;
-                }
-
-                ex.involved.forEach(user => {
-                    if (balances[user] !== undefined) {
-                        balances[user] -= share;
-                    }
-                });
+                const share = ex.amount / ex.involved.length;
+                balances[ex.payer] += ex.amount;
+                ex.involved.forEach(user => balances[user] -= share);
             });
 
-            let debtors = [];
-            let creditors = [];
-
+            let debtors = [], creditors = [];
             Object.keys(balances).forEach(user => {
-                const balance = balances[user];
-                if (balance < -0.01) debtors.push({ user, amount: balance }); 
-                if (balance > 0.01) creditors.push({ user, amount: balance });
+                if (balances[user] < -0.01) debtors.push({ user, amount: balances[user] });
+                if (balances[user] > 0.01) creditors.push({ user, amount: balances[user] });
             });
 
             debtors.sort((a, b) => a.amount - b.amount);
             creditors.sort((a, b) => b.amount - a.amount);
 
-            let newSettlements = [];
-            let i = 0; 
-            let j = 0; 
-
+            let settlements = [], i = 0, j = 0;
             while (i < debtors.length && j < creditors.length) {
-                let debtor = debtors[i];
-                let creditor = creditors[j];
-                let amountToSettle = Math.min(Math.abs(debtor.amount), creditor.amount);
-
-                newSettlements.push({
-                    from: debtor.user,
-                    to: creditor.user,
-                    amount: amountToSettle
-                });
-
-                debtor.amount += amountToSettle;
-                creditor.amount -= amountToSettle;
-
-                if (Math.abs(debtor.amount) < 0.01) i++;
-                if (creditor.amount < 0.01) j++;
+                let amount = Math.min(Math.abs(debtors[i].amount), creditors[j].amount);
+                settlements.push({ from: debtors[i].user, to: creditors[j].user, amount });
+                debtors[i].amount += amount; creditors[j].amount -= amount;
+                if (Math.abs(debtors[i].amount) < 0.01) i++;
+                if (creditors[j].amount < 0.01) j++;
             }
 
-            ui.summaryTotal.textContent = totalExpense.toLocaleString() + ' ฿';
+            ui.summaryTotal.textContent = `${totalExpense.toLocaleString()} ฿`;
             ui.summaryCard.classList.remove('hidden');
             
-            if (newSettlements.length === 0) {
-                ui.settlementsContainer.innerHTML = '';
-                ui.settlementEmpty.classList.remove('hidden');
+            if (settlements.length === 0) {
+                ui.settlementsContainer.innerHTML = ''; ui.settlementEmpty.classList.remove('hidden');
             } else {
                 ui.settlementEmpty.classList.add('hidden');
-                ui.settlementsContainer.innerHTML = newSettlements.map(s => `
-                    <div class="flex items-center justify-between p-3 bg-gray-50 border border-gray-200 rounded-xl shadow-sm hover:bg-white transition-colors">
+                ui.settlementsContainer.innerHTML = settlements.map(s => `
+                    <div class="flex items-center justify-between p-3 bg-white border-2 border-green-100 rounded-xl shadow-sm">
                         <div class="flex items-center gap-3">
-                            <div class="flex flex-col items-center min-w-[60px]">
-                                <span class="font-bold text-red-500 text-sm">${s.from}</span>
-                                <span class="text-[10px] text-gray-400">ผู้โอน</span>
+                            <div class="text-center">
+                                <span class="font-bold text-toy-red text-lg block">${s.from}</span>
                             </div>
-                            <div class="text-gray-300">➜</div>
-                            <div class="flex flex-col items-center min-w-[60px]">
-                                <span class="font-bold text-green-600 text-sm">${s.to}</span>
-                                <span class="text-[10px] text-gray-400">ผู้รับ</span>
+                            <div class="text-gray-300"><i data-lucide="arrow-right"></i></div>
+                            <div class="text-center">
+                                <span class="font-bold text-buzz-green text-lg block">${s.to}</span>
                             </div>
                         </div>
-                        <span class="font-bold text-gray-800 text-lg">${s.amount.toLocaleString('th-TH', { style: 'currency', currency: 'THB' })}</span>
+                        <span class="font-cartoon font-bold text-gray-700 text-xl">${s.amount.toLocaleString(undefined, {minimumFractionDigits:0, maximumFractionDigits:0})}</span>
                     </div>
                 `).join('');
             }
-            
-            ui.summaryCard.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            ui.summaryCard.scrollIntoView({ behavior: 'smooth' });
         });
-
     </script>
 </body>
 </html>
